@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+<sqlMap namespace="records" >
+	<typeAlias alias="records" type="com.alibaba.orland.dataobject.Records" />
+	<resultMap id="records_BaseResultMap" class="records" >
+		<result column="id" property="id" jdbcType="INTEGER" />
+		<result column="value" property="value" jdbcType="VARCHAR" />
+		<result column="type" property="type" jdbcType="VARCHAR" />
+		<result column="group_id" property="groupId" jdbcType="VARCHAR" />
+		<result column="expired" property="expired" jdbcType="DATE" />
+		<result column="created_list" property="createdList" jdbcType="INTEGER" />
+	</resultMap>
+
+	<insert id="insert" parameterClass="records" >
+	    	insert into records (id, value, type, group_id, expired, created_list) values (#id:INTEGER#, #value:VARCHAR#, #type:VARCHAR#, #groupId:VARCHAR#, #expired:DATE#, #createdList:VARCHAR#)
+	</insert>
+	<insert id="insertSelective" parameterClass="records" >
+		insert into records
+		<dynamic prepend="(" >
+			<isNotNull prepend="," property="id" > id </isNotNull>
+			<isNotNull prepend="," property="value" > value </isNotNull>
+			<isNotNull prepend="," property="type" > type </isNotNull>
+			<isNotNull prepend="," property="groupId" > group_id </isNotNull>
+			<isNotNull prepend="," property="expired" > expired </isNotNull>
+			<isNotNull prepend="," property="createdList" > created_list </isNotNull>
+		)
+		</dynamic>
+		values
+		<dynamic prepend="(" >
+			<isNotNull prepend="," property="id" > #id:INTEGER# </isNotNull>
+			<isNotNull prepend="," property="value" > #value:VARCHAR# </isNotNull>
+			<isNotNull prepend="," property="type" > #type:VARCHAR# </isNotNull>
+			<isNotNull prepend="," property="groupId" > #groupId:VARCHAR# </isNotNull>
+			<isNotNull prepend="," property="expired" > #expired:DATE# </isNotNull>
+			<isNotNull prepend="," property="createdList" > #createdList:VARCHAR# </isNotNull>
+		)
+		</dynamic>
+	</insert>
+
+	<insert id="copyRecordGroup" parameterClass="map">
+		insert into records(value,type,group_id,expired,created_list) select value,type,'$newGroup$',expired,'$list$' from records where group_id=#oldGroup#
+	</insert>
+
+	<delete id="deleteGroupByGroupId" parameterClass="string">
+		delete from records where group_id=#v#	
+	</delete>
+
+	<select id="queryRecordsWithValue" parameterClass="string" resultMap="records_BaseResultMap">
+		select id,value,type,group_id,expired,created_list from records where value = #v#
+	</select>
+
+	<delete id="deleteRecords" parameterClass="int">
+		delete from records where id = #id#	
+	</delete>
+
+	<select id="queryByKeyAndInGroup" parameterClass="map" resultMap="records_BaseResultMap">
+		select id,value,type,expired,created_list,group_id from records where value = #value# and group_id in ($groups$)
+	</select>
+
+	<select id="batchQueryInGroup" parameterClass="map" resultMap="records_BaseResultMap">
+		select id,value,type,expired,created_list,group_id from records where id>= #beginIndex# and group_id in ($groups$) and id not in (select id from records_deleted where list_id=#list#) order by id asc limit 0,#limitSize#
+	</select>
+
+	<select id="countList" parameterClass="map" resultClass="int">
+		select count(id) from records where group_id in ($groups$) and id not in (select id from records_deleted where list_id=#list#)
+	</select>
+	
+	<select id="countGroupInList" parameterClass="map" resultClass="int">
+		select count(id) from records where group_id = #group# and id not in (select id from records_deleted where list_id=#list#)
+	</select>
+</sqlMap>
