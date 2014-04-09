@@ -56,7 +56,7 @@ public class CommitLog {
 
 	public CommitLog() {
 		File[] nls = FileUtils.listDirectory(new File(ServerDescriptor
-				.getRootPath()));
+				.getDataPath()));
 		if (nls != null && nls.length > 0) {
 			for (File f : nls) {
 				File[] flag = f.listFiles(new PatternFilenameFilter("."

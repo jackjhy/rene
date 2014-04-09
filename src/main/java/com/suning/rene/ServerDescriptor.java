@@ -1,7 +1,5 @@
 package com.suning.rene;
 
-import com.sun.org.apache.xerces.internal.util.SynchronizedSymbolTable;
-import com.suning.rene.core.ReneException;
 import com.suning.rene.utils.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,28 +19,40 @@ public class ServerDescriptor {
 	private static final Logger logger = LoggerFactory
 			.getLogger(ServerDescriptor.class);
 
-	static final String RENE_HOME_PATH = "RENE_HOME";
 	static final String RENE_HOME_PATH_1 = "rene.home";
 	static String rootPath;
+    static String dataPath;
 
 	static Properties p = null;
 
 	public static String getCommitLogLocation(String nl) {
-		String path = getRootPath() + File.separatorChar + nl;
+		String path = getDataPath() + File.separatorChar + nl;
 		FileUtils.createDirectory(path);
 		return path;
 	}
 
-	public static String getRootPath() {
-		if (rootPath != null)
-			return rootPath;
-		String home = System.getenv(RENE_HOME_PATH);
-		if (home == null || home.trim().length() == 0)
-			home = System.getProperty(RENE_HOME_PATH_1);
-		if (home == null || home.trim().length() == 0)
-			logger.error("can not find rene home, plz check again");
-		return "/home/tiger/rene_test";
+	public static String getDataPath() {
+		if (dataPath != null)
+			return dataPath;
+        if(p==null){
+            p = loadProp();
+        }
+        dataPath = p.getProperty("rene.data.path");
+        if(dataPath==null||dataPath.trim().length()==0) dataPath = getHomePath()+File.separator+"data";
+        FileUtils.createDirectory(dataPath);
+		return dataPath;
 	}
+
+
+    public static String getHomePath() {
+        if (rootPath != null)
+            return rootPath;
+            String home = System.getProperty(RENE_HOME_PATH_1);
+        if (home == null || home.trim().length() == 0)
+            logger.error("can not find rene home, plz check again");
+        else rootPath = home;
+        return home;
+    }
 
 	public static long getCommitLogSegmentSize() {
 		if (p == null)
@@ -86,7 +96,7 @@ public class ServerDescriptor {
 
 	private static Properties loadProp() {
 		Properties p = new Properties();
-		File file = new File(getRootPath() + File.separator + "conf.properties");
+		File file = new File(getHomePath() + File.separator + "conf.properties");
 		if (file.exists()) {
 			FileInputStream fis = null;
 			try {
@@ -101,8 +111,14 @@ public class ServerDescriptor {
 					} catch (IOException e) {
 					}
 			}
+            return p;
 		}
-		return p;
+        try {
+            p.load(ServerDescriptor.class.getClassLoader().getResourceAsStream("conf.properties"));
+        } catch (IOException e) {
+            logger.warn("error when read conf b",e);
+        }
+        return p;
 	}
 
 	public static int getAsciiPort() {

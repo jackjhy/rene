@@ -1,6 +1,5 @@
 package com.suning.rene;
 
-import com.suning.rene.core.BloomFilter;
 import com.suning.rene.core.BloomFilterContainer;
 import com.suning.rene.transport.netty.MemCacheCommandHandler;
 import com.suning.rene.transport.netty.codec.memcache.ascii.CommandDecoder;
@@ -22,7 +21,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.net.Inet4Address;
 import java.net.InetAddress;
 
 /**
@@ -33,7 +31,7 @@ public class ServerMain {
 			.getLogger(ServerMain.class);
 	public static void main(String[] args) throws InterruptedException {
 		// check home
-		String home = ServerDescriptor.getRootPath();
+		String home = ServerDescriptor.getDataPath();
 		if (home == null || home.trim().length() == 0) {
 			logger.error("rene home is needed");
 			return;

@@ -33,7 +33,7 @@ public class BloomFilterContainer implements IMCCommand {
 
 	private BloomFilterContainer() {
 		File[] ls = FileUtils.listDirectory(new File(ServerDescriptor
-				.getRootPath()));
+				.getDataPath()));
 		if (ls != null && ls.length > 0) {
 			for (File lf : ls) {
 				String nl = lf.getName();
