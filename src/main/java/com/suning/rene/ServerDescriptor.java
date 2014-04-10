@@ -61,6 +61,7 @@ public class ServerDescriptor {
 		try {
 			size = Long.parseLong(p.getProperty("com.suning.rene.css"));
 		} catch (NumberFormatException e) {
+            logger.warn("got error when read commit log segment size from conf,use default 1024*1024 kb");
 		}
 		return size;
 	}
@@ -72,6 +73,7 @@ public class ServerDescriptor {
 		try {
 			size = Integer.parseInt(p.getProperty("com.suning.rene.cpqs"));
 		} catch (NumberFormatException e) {
+            logger.warn("got error when read commit log periodic queue size from conf,use default 50");
 		}
 		return size;
 	}
@@ -83,6 +85,7 @@ public class ServerDescriptor {
 		try {
 			size = Integer.parseInt(p.getProperty("com.suning.rene.csp"));
 		} catch (NumberFormatException e) {
+            logger.warn("got error when read commit log sync period from conf,use default 10 ms");
 		}
 		return size;
 	}
@@ -140,6 +143,7 @@ public class ServerDescriptor {
 			size = Integer.parseInt(p
 					.getProperty("com.suning.rene.worker.size"));
 		} catch (NumberFormatException e) {
+            logger.warn("got error when read default worker thread number from conf,use default 0");
 		}
 		return size;
 	}

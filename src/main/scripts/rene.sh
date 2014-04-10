@@ -102,7 +102,7 @@ launch_service()
     foreground="$2"
     props="$3"
     class="$4"
-#    rene_parms="-Dlog4j.configuration=log4j-custom.properties -Dlog4j.defaultInitOverride=true"
+    rene_parms="-Dlog4j.configuration=file:$RENE_HOME/log4j-custom.properties -Dlog4j.defaultInitOverride=true"
 
     if [ "x$foreground" != "x" ]; then
         exec $NUMACTL "$JAVA" $JVM_OPTS -cp "$CLASSPATH" $props "$class"
